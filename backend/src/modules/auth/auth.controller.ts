@@ -1,13 +1,13 @@
 import { Request, Response } from 'express'
 import { AuthService } from './auth.service'
-import { verifySchema } from './auth.validator'
+import { loginSchema } from './auth.validator'
 
 const authService = new AuthService()
 
 export class AuthController {
-  async verify(req: Request, res: Response): Promise<void> {
-    const input = verifySchema.parse(req.body)
-    const result = await authService.verify(input)
+  async login(req: Request, res: Response): Promise<void> {
+    const input = loginSchema.parse(req.body)
+    const result = await authService.login(input)
     res.status(200).json(result)
   }
 }

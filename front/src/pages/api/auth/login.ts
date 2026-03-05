@@ -5,16 +5,16 @@ import { NextApiRequest, NextApiResponse } from 'next'
 export default async function loginHandler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { email, reqresToken } = req.body
+  const { email, password } = req.body
 
-  if (!email || !reqresToken) {
-    return res.status(400).json({ error: 'Email and reqresToken are required' })
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required' })
   }
 
   try {
     const { data } = await axios.post(
-      `${process.env.API_URL ?? 'http://localhost:4000'}/auth/verify`,
-      { email, reqresToken }
+      `${process.env.API_URL ?? 'http://localhost:4000'}/auth/login`,
+      { email, password }
     )
 
     const serializedToken = serialize('myTokenName', data.token, {

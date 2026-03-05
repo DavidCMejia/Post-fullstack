@@ -18,25 +18,17 @@ export default function LoginPage() {
     setLoading(true)
     setError(null)
     try {
-      // Step 1: Login directly to ReqRes from the browser (bypasses Cloudflare)
-      const reqresRes = await axios.post('https://reqres.in/api/login', {
-        email: values.email,
-        password: values.password,
-      })
-
-      // Step 2: Send the ReqRes token to our Next API route
-      // which forwards to Express to generate our own JWT
       const res = await axios.post('/api/auth/login', {
         email: values.email,
-        reqresToken: reqresRes.data.token,
+        password: values.password,
       })
 
       localStorage.setItem('token', res.data.token)
       dispatch(setCredentials({ token: res.data.token, email: values.email }))
       router.push('/dashboard')
     } catch (err: any) {
-      const message = err.response?.data?.error ?? err.response?.data ?? 'Login failed. Check your credentials.'
-      setError(typeof message === 'string' ? message : 'Login failed. Check your credentials.')
+      const message = err.response?.data?.error ?? 'Login failed. Check your credentials.'
+      setError(message)
     } finally {
       setLoading(false)
     }
