@@ -7,16 +7,18 @@ import { SavedUser } from '../entities/SavedUser'
 import { Post } from '../entities/Post'
 
 const seed = async (): Promise<void> => {
-  await AppDataSource.initialize()
-  console.log('✅ Database connected')
+  await AppDataSource.initialize();
+  console.log('✅ Database connected');
 
-  const userRepo = AppDataSource.getRepository(SavedUser)
-  const postRepo = AppDataSource.getRepository(Post)
+  await AppDataSource.synchronize();
+  console.log('✅ Schema synchronized');
+
+  const userRepo = AppDataSource.getRepository(SavedUser);
+  const postRepo = AppDataSource.getRepository(Post);
 
   // Limpio data
-  await postRepo.delete({})
-  await userRepo.delete({})
-  console.log('🗑️  Cleared existing data')
+  await AppDataSource.query('TRUNCATE TABLE "posts", "saved_users" CASCADE'); // en este orden x el FK
+  console.log('🗑️  Cleared existing data');
 
   // Seed users (similar a ReqRes user structure)
   const users = userRepo.create([
@@ -41,10 +43,10 @@ const seed = async (): Promise<void> => {
       lastName: 'Wong',
       avatar: 'https://reqres.in/img/faces/3-image.jpg',
     },
-  ])
+  ]);
 
-  await userRepo.save(users)
-  console.log(`🌱 Seeded ${users.length} users`)
+  await userRepo.save(users);
+  console.log(`🌱 Seeded ${users.length} users`);
 
   // Seed posts
   const posts = postRepo.create([
@@ -63,16 +65,16 @@ const seed = async (): Promise<void> => {
       content: 'Building a REST API requires careful planning around resource naming, HTTP methods, status codes, and error handling.',
       authorUserId: 3,
     },
-  ])
+  ]);
 
-  await postRepo.save(posts)
-  console.log(`🌱 Seeded ${posts.length} posts`)
+  await postRepo.save(posts);
+  console.log(`🌱 Seeded ${posts.length} posts`);
 
-  await AppDataSource.destroy()
-  console.log('✅ Seed complete')
+  await AppDataSource.destroy();
+  console.log('✅ Seed complete');
 }
 
 seed().catch((err) => {
-  console.error('❌ Seed failed:', err)
-  process.exit(1)
+  console.error('❌ Seed failed:', err);
+  process.exit(1);
 })
