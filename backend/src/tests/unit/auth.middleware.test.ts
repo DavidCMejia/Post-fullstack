@@ -27,7 +27,7 @@ describe('authMiddleware', () => {
     authMiddleware(req, mockRes, mockNext)
 
     expect(mockRes.status).toHaveBeenCalledWith(401)
-    expect(mockNext).not.toHaveBeenCalled()
+    expect(mockNext).not.toHaveBeenCalled() // test
   })
 
   it('should return 401 when token is invalid', () => {
