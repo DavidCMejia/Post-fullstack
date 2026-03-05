@@ -18,7 +18,7 @@ export class AuthService {
       const ourToken = jwt.sign(
         { email: input.email, reqresToken: data.token },
         process.env.JWT_SECRET ?? 'secret',
-        { expiresIn: process.env.JWT_EXPIRES_IN ?? '24h' }
+        { expiresIn: '24h' }
       )
 
       return { token: ourToken }
