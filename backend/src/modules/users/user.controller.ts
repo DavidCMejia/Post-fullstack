@@ -5,6 +5,19 @@ import { AppError } from '../../middlewares/error.middleware'
 const userService = new UserService()
 
 export class UserController {
+  async getReqResUsers(req: Request, res: Response): Promise<void> {
+    const page = parseInt(req.query.page as string) || 1
+    const data = await userService.getReqResUsers(page)
+    res.status(200).json(data)
+  }
+
+  async getReqResUser(req: Request, res: Response): Promise<void> {
+    const id = parseInt(req.params.id)
+    if (isNaN(id)) throw new AppError(400, 'User ID must be a number')
+    const user = await userService.getReqResUser(id)
+    res.status(200).json(user)
+  }
+
   async importUser(req: Request, res: Response): Promise<void> {
     const id = parseInt(req.params.id)
     if (isNaN(id)) throw new AppError(400, 'User ID must be a number')
