@@ -237,3 +237,29 @@ serverless deploy
 ```
 
 > Set all environment variables as Lambda environment variables before deploying.
+---
+
+## API Documentation (Swagger)
+
+The backend exposes an interactive Swagger UI at:
+
+```
+http://localhost:4000/api-docs
+```
+
+The raw OpenAPI spec is available at:
+
+```
+http://localhost:4000/api-docs.json
+```
+
+The frontend also includes an embedded **API Docs** page accessible from the sidebar at `http://localhost:3000/docs`.
+
+### How to test authenticated endpoints in Swagger
+
+1. Open `http://localhost:4000/api-docs`
+2. Call `POST /auth/login` with valid credentials
+3. Copy the `token` from the response
+4. Click the **Authorize** button (top right)
+5. Paste the token and click **Authorize**
+6. All protected endpoints are now unlocked
