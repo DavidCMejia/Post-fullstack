@@ -1,37 +1,37 @@
-# Fullstack Challenge — Backend
+# Fullstack Challenge — Users & Posts
 
-REST API built with **Express + TypeScript + TypeORM + PostgreSQL**.
+Full-stack application built with **Next.js + Express + TypeScript + PostgreSQL**.
+
+---
+
+## Monorepo Structure
+
+```
+AAA Users & Posts/
+├── backend/       # Express REST API
+├── front/         # Next.js frontend
+└── README.md
+```
 
 ---
 
 ## Tech Stack
 
-- Node.js + Express
+**Frontend**
+- Next.js 13 (Pages Router)
 - TypeScript
-- TypeORM
-- PostgreSQL
+- Redux Toolkit
+- Ant Design
+- Axios
+- Jest + React Testing Library
+
+**Backend**
+- Express + TypeScript
+- TypeORM + PostgreSQL
 - Zod (validation)
 - JWT (authentication)
 - Docker + Docker Compose
-
----
-
-## Project Structure
-
-```
-src/
-├── config/             # Database connection (TypeORM DataSource)
-├── entities/           # TypeORM entities (SavedUser, Post)
-├── middlewares/        # Auth guard, centralized error handler
-├── modules/
-│   ├── auth/           # Login — validator, service, controller, routes
-│   ├── users/          # Users — repository, service, controller, routes
-│   └── posts/          # Posts — validator, repository, service, controller, routes
-├── tests/
-│   └── unit/           # Unit tests (Jest)
-├── app.ts              # Express app setup
-└── index.ts            # Entry point — DB init + server start
-```
+- Jest (unit tests)
 
 ---
 
@@ -43,79 +43,66 @@ src/
 
 ---
 
-## Installation
+## Getting Started
+
+### 1. Clone the repo
 
 ```bash
-# Clone the repo
 git clone <your-repo-url>
-cd backend
-
-# Install dependencies
-yarn
-
-# Copy environment variables
-cp .env.example .env
+cd "AAA Users & Posts"
 ```
 
 ---
 
-## Environment Variables
+## Backend Setup
 
-| Variable        | Description                          | Default                  |
-|-----------------|--------------------------------------|--------------------------|
-| `PORT`          | Server port                          | `4000`                   |
-| `NODE_ENV`      | Environment                          | `development`            |
-| `DB_HOST`       | PostgreSQL host                      | `localhost`              |
-| `DB_PORT`       | PostgreSQL port                      | `5432`                   |
-| `DB_USERNAME`   | PostgreSQL user                      | `postgres`               |
-| `DB_PASSWORD`   | PostgreSQL password                  | `postgres`               |
-| `DB_NAME`       | PostgreSQL database name             | `fullstack_challenge`    |
-| `JWT_SECRET`    | Secret key for signing JWT tokens    | —                        |
-| `JWT_EXPIRES_IN`| JWT expiration time                  | `24h`                    |
-| `REQRES_BASE_URL`| ReqRes API base URL                 | `https://reqres.in/api`  |
-| `CORS_ORIGIN`   | Allowed CORS origin                  | `http://localhost:3000`  |
+```bash
+cd backend
+yarn
+cp .env.example .env
+```
 
-> ⚠️ Never commit your `.env` file. It is already in `.gitignore`.
+### Environment Variables
 
----
+| Variable          | Description                        | Default                 |
+|-------------------|------------------------------------|-------------------------|
+| `PORT`            | Server port                        | `4000`                  |
+| `DB_HOST`         | PostgreSQL host                    | `localhost`             |
+| `DB_PORT`         | PostgreSQL port                    | `5432`                  |
+| `DB_USERNAME`     | PostgreSQL user                    | `postgres`              |
+| `DB_PASSWORD`     | PostgreSQL password                | `postgres`              |
+| `DB_NAME`         | Database name                      | `fullstack_challenge`   |
+| `JWT_SECRET`      | Secret key for JWT signing         | —                       |
+| `REQRES_BASE_URL` | ReqRes API base URL                | `https://reqres.in/api` |
+| `CORS_ORIGIN`     | Allowed CORS origin                | `http://localhost:3000` |
 
-## Running Locally
-
-### 1. Start PostgreSQL with Docker
+### Start PostgreSQL
 
 ```bash
 docker-compose up -d
 ```
 
-> If port `5432` is already in use by another local Postgres instance, change the left side of the port mapping in `docker-compose.yml` and update `DB_PORT` in your `.env` accordingly:
-> ```yaml
-> ports:
->   - '5435:5432'
-> ```
+> If port `5432` is in use, change the mapping in `docker-compose.yml` to `5435:5432` and update `DB_PORT` in `.env`.
 
-### 2. Create the database
+### Create the database
 
 ```bash
 docker exec -it fullstack_postgres psql -U postgres -c "CREATE DATABASE fullstack_challenge;"
 ```
 
-> Alternatively you can do this visually via pgAdmin at `http://localhost:5050` (login: `admin@admin.com` / `admin`).
-
-### 4. (Optional) Seed the database
+### Seed (optional)
 
 ```bash
 yarn seed
 ```
 
-This creates 3 sample users and 3 sample posts to get you started.
+Creates 3 sample users and 3 sample posts.
 
-### 5. Start the development server
+### Start the server
 
 ```bash
 yarn dev
 ```
-
-The server watches for file changes automatically via `ts-node-dev`.
 
 Expected output:
 ```
@@ -123,120 +110,130 @@ Expected output:
 🚀 Server running on http://localhost:4000
 ```
 
-> In `development` mode, TypeORM runs with `synchronize: true` — tables are created automatically on startup. No manual migrations needed locally.
-
-### 3. Verify the server is running
-
-```
-GET http://localhost:4000/health
-```
-
----
-
-## API Endpoints
-
-All endpoints except `/auth/login` require a `Bearer` token in the `Authorization` header.
-
-### Auth
-
-| Method | Endpoint       | Description              | Auth required |
-|--------|----------------|--------------------------|---------------|
-| POST   | /auth/login    | Login via ReqRes API     | No            |
-
-**Request body:**
-```json
-{
-  "email": "eve.holt@reqres.in",
-  "password": "cityslicka"
-}
-```
-
-**Response:**
-```json
-{
-  "token": "<jwt_token>"
-}
-```
-
----
-
-### Users
-
-| Method | Endpoint              | Description                        | Auth required |
-|--------|-----------------------|------------------------------------|---------------|
-| POST   | /users/import/:id     | Fetch user from ReqRes and save to DB | Yes        |
-| GET    | /users/saved          | List all locally saved users       | Yes           |
-| GET    | /users/saved/:id      | Get a single saved user            | Yes           |
-| DELETE | /users/saved/:id      | Delete a saved user                | Yes           |
-
----
-
-### Posts
-
-| Method | Endpoint      | Description              | Auth required |
-|--------|---------------|--------------------------|---------------|
-| GET    | /posts        | List posts (paginated)   | Yes           |
-| GET    | /posts/:id    | Get a single post        | Yes           |
-| POST   | /posts        | Create a post            | Yes           |
-| PUT    | /posts/:id    | Update a post            | Yes           |
-| DELETE | /posts/:id    | Delete a post            | Yes           |
-
-**Pagination query params:** `?page=1&limit=10`
-
-**Create/Update post body:**
-```json
-{
-  "title": "My post title",
-  "content": "Post body content here",
-  "authorUserId": 1
-}
-```
-
----
-
-## Running Tests
+### Run backend tests
 
 ```bash
 yarn test
 ```
 
-Tests are located in `src/tests/unit/` and cover:
+Covers: auth service, auth middleware, post service.
 
-- `auth.service.test.ts` — login success, invalid credentials, service unavailable
-- `auth.middleware.test.ts` — valid token, missing token, invalid token
-- `post.service.test.ts` — paginated list, 404 on missing post, create post
+---
+
+## Frontend Setup
+
+```bash
+cd front
+yarn
+```
+
+Create `.env.local` in the `front/` directory:
+
+```
+NEXT_PUBLIC_API_URL=http://localhost:4000
+API_URL=http://localhost:4000
+```
+
+### Start the frontend
+
+```bash
+yarn dev
+```
+
+Opens at `http://localhost:3000`.
+
+On startup, the console will show:
+```
+✅ Backend connected — http://localhost:4000
+```
+
+### Run frontend tests
+
+```bash
+yarn test
+```
+
+Covers: Login page rendering, error handling, redirect on success, Users list rendering, client-side search filtering.
+
+---
+
+## API Endpoints
+
+All endpoints except `POST /auth/login` require `Authorization: Bearer <token>`.
+
+### Auth
+
+| Method | Endpoint      | Auth | Description           |
+|--------|---------------|------|-----------------------|
+| POST   | /auth/login   | No   | Login, returns JWT    |
+
+```json
+{ "email": "eve.holt@reqres.in", "password": "cityslicka" }
+```
+
+### Users
+
+| Method | Endpoint            | Auth | Description                      |
+|--------|---------------------|------|----------------------------------|
+| GET    | /users/reqres       | Yes  | List users from ReqRes (paged)   |
+| GET    | /users/reqres/:id   | Yes  | Get single ReqRes user           |
+| POST   | /users/import/:id   | Yes  | Import user from ReqRes to DB    |
+| GET    | /users/saved        | Yes  | List locally saved users         |
+| GET    | /users/saved/:id    | Yes  | Get single saved user            |
+| DELETE | /users/saved/:id    | Yes  | Delete saved user                |
+
+### Posts
+
+| Method | Endpoint    | Auth | Description              |
+|--------|-------------|------|--------------------------|
+| GET    | /posts      | Yes  | List posts (paginated)   |
+| GET    | /posts/:id  | Yes  | Get single post          |
+| POST   | /posts      | Yes  | Create post              |
+| PUT    | /posts/:id  | Yes  | Update post              |
+| DELETE | /posts/:id  | Yes  | Delete post              |
+
+**Pagination:** `?page=1&limit=10`
+
+---
+
+## Authentication Flow
+
+```
+Browser → POST /api/auth/login (Next.js API route)
+              ↓
+         POST http://localhost:4000/auth/login (Express)
+              ↓
+         Express validates credentials
+              ↓
+         Returns JWT → stored in httpOnly cookie + localStorage
+              ↓
+         Next.js middleware protects /dashboard, /users, /posts
+         Express middleware protects all API routes
+```
+
+---
+
+## ⚠️ Note on ReqRes Availability
+
+ReqRes (`https://reqres.in`) is protected by Cloudflare, which blocks server-side HTTP requests from Node.js with a `403 Forbidden` response.
+
+**Solution implemented:** Both the auth service and user service attempt to reach ReqRes first. If Cloudflare blocks the request, they fall back to local validation using the known ReqRes credentials and user data, maintaining identical behavior.
+
+Valid credentials (same as ReqRes docs):
+- `eve.holt@reqres.in` / `cityslicka`
+- `charles.morris@reqres.in` / `pistol`
+- `peter.fields@reqres.in` / `marko`
+
+If ReqRes becomes accessible in a different network or deployment environment, the integration works transparently without any code changes.
 
 ---
 
 ## Deployment (AWS Lambda)
 
-The backend is deployed on **AWS Lambda** via the [Serverless Framework](https://www.serverless.com/).
-
-### Prerequisites
-
 ```bash
 npm install -g serverless
-```
-
-### Deploy
-
-```bash
-# Configure AWS credentials
 aws configure
-
-# Deploy to AWS
 serverless deploy
 ```
 
-The API Gateway endpoint URL will be printed after a successful deploy.
-
-> Make sure to set all environment variables as Lambda environment variables or via AWS Secrets Manager before deploying.
-
----
-
-## Notes
-
-- ReqRes (`https://reqres.in/api`) is used as an external mock service for authentication and user data.
-- The login flow delegates credential validation to ReqRes and wraps the result in a local JWT.
-- Posts are stored entirely in your local PostgreSQL database.
-- Users are imported from ReqRes on demand and persisted locally.
+> Set all environment variables as Lambda environment variables before deploying.

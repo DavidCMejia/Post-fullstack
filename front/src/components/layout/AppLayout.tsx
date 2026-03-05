@@ -4,6 +4,7 @@ import {
   FileTextOutlined,
   LogoutOutlined,
   DashboardOutlined,
+  ApiOutlined,
 } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import axios from 'axios';
@@ -36,7 +37,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
     { key: '/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
     { key: '/users', icon: <UserOutlined />, label: 'Users' },
     { key: '/posts', icon: <FileTextOutlined />, label: 'Posts' },
-  ];
+    { key: '/docs', icon: <ApiOutlined />, label: 'API Docs' },
+  ]
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
