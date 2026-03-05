@@ -1,26 +1,19 @@
 import { serialize } from 'cookie';
-import { verify } from 'jsonwebtoken';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default function logoutHandler(req: NextApiRequest, res: NextApiResponse) {
-  const { myTokenName } = req.cookies;
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  if (!myTokenName) {
-    return res.status(401).json({ error: 'no token' });
-  }
+  const cookie = req.cookies['myTokenName'];
+  if (!cookie) return res.status(401).json({ error: 'Unauthorized' });
 
-  try {
-    verify(myTokenName, 'secret');
-    const serializedToken = serialize('myTokenName', null, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict', // cuando es para backend independientes se recomienda 'none'
-      maxAge: 0,
-      path: '/',
-    });
-    res.setHeader('Set-Cookie', serializedToken);
-    res.status(200).json({ message: 'logged out sucessfully' });
-  } catch (error) {
-    return res.status(401).json({ error: 'invalid token' });
-  }
+  res.setHeader('Set-Cookie', serialize('myTokenName', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: -1,
+    path: '/',
+  }));
+
+  return res.status(200).json({ message: 'Logged out successfully' })
 }
