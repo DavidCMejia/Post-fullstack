@@ -1,31 +1,44 @@
-import { Form, Input, Button, Card, Typography, Alert } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { useRouter } from 'next/router';
-import { useState } from 'react';
-import axios from 'axios';
-import { useAppDispatch } from '../slices/hooks';
-import { setCredentials } from '../slices/authSlice';
+import { Form, Input, Button, Card, Typography, Alert } from 'antd'
+import { UserOutlined, LockOutlined } from '@ant-design/icons'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
+import axios from 'axios'
+import { useAppDispatch } from '../slices/hooks'
+import { setCredentials } from '../slices/authSlice'
 
 const { Title, Text } = Typography
 
 export default function LoginPage() {
-  const router = useRouter();
-  const dispatch = useAppDispatch();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter()
+  const dispatch = useAppDispatch()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const onFinish = async (values: { email: string; password: string }) => {
-    setLoading(true);
-    setError(null);
+    setLoading(true)
+    setError(null)
     try {
-      const res = await axios.post('/api/auth/login', values);
-      localStorage.setItem('token', res.data.token);
-      dispatch(setCredentials({ token: res.data.token, email: values.email }));
-      router.push('/dashboard');
+      // Step 1: Login directly to ReqRes from the browser (bypasses Cloudflare)
+      const reqresRes = await axios.post('https://reqres.in/api/login', {
+        email: values.email,
+        password: values.password,
+      })
+
+      // Step 2: Send the ReqRes token to our Next API route
+      // which forwards to Express to generate our own JWT
+      const res = await axios.post('/api/auth/login', {
+        email: values.email,
+        reqresToken: reqresRes.data.token,
+      })
+
+      localStorage.setItem('token', res.data.token)
+      dispatch(setCredentials({ token: res.data.token, email: values.email }))
+      router.push('/dashboard')
     } catch (err: any) {
-      setError(err.response?.data?.error ?? 'Login failed. Please try again.');
+      const message = err.response?.data?.error ?? err.response?.data ?? 'Login failed. Check your credentials.'
+      setError(typeof message === 'string' ? message : 'Login failed. Check your credentials.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 

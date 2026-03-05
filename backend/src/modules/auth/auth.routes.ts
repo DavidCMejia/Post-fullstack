@@ -4,6 +4,6 @@ import { AuthController } from './auth.controller'
 const router = Router()
 const controller = new AuthController()
 
-router.post('/login', (req, res) => controller.login(req, res))
+router.post('/verify', (req, res) => controller.verify(req, res))
 
 export default router
