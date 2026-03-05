@@ -1,0 +1,32 @@
+import { Request, Response, NextFunction } from 'express'
+import jwt from 'jsonwebtoken'
+
+export interface AuthRequest extends Request {
+  user?: { email: string; reqresToken: string }
+}
+
+export const authMiddleware = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): void => {
+  const authHeader = req.headers.authorization
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    res.status(401).json({ error: 'Unauthorized: No token provided' })
+    return
+  }
+
+  const token = authHeader.split(' ')[1]
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET ?? 'secret') as {
+      email: string
+      reqresToken: string
+    }
+    req.user = decoded
+    next()
+  } catch {
+    res.status(401).json({ error: 'Unauthorized: Invalid or expired token' })
+  }
+}
