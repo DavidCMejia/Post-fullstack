@@ -16,6 +16,7 @@ provider:
     DB_PASSWORD: ${env:DB_PASSWORD_PROD}
     DB_NAME: ${env:DB_NAME_PROD}
     JWT_SECRET: ${env:JWT_SECRET}
+    JWT_EXPIRES_IN: 24h
     REQRES_BASE_URL: https://reqres.in/api
     CORS_ORIGIN: '*'
   httpApi:
