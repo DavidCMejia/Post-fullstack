@@ -27,6 +27,7 @@ app.get('/health', (_req, res) => {
 })
 
 // Swagger UI — available at http://localhost:4000/api-docs
+// @ts-ignore
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 app.get('/api-docs.json', (_req, res) => res.json(swaggerSpec))
 
