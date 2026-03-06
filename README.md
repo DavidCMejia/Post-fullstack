@@ -230,13 +230,49 @@ If ReqRes becomes accessible in a different network or deployment environment, t
 
 ## Deployment (AWS Lambda)
 
-```bash
-npm install -g serverless
-aws configure
-serverless deploy
+The backend is deployed on AWS Lambda via the Serverless Framework.
+
+**Live backend URL:**
+```
+https://x8ljuoyfr0.execute-api.us-east-1.amazonaws.com
 ```
 
-> Set all environment variables as Lambda environment variables before deploying.
+### Prerequisites
+
+```bash
+npm install -g serverless
+aws configure  # requires AWS Access Key ID and Secret
+```
+
+### Deploy
+
+```bash
+cd backend
+yarn deploy
+```
+
+This compiles TypeScript and deploys to AWS Lambda + API Gateway automatically.
+
+### Remove deployment
+
+```bash
+cd backend
+serverless remove
+```
+
+### Production database
+
+Production uses **Supabase** (PostgreSQL). Set the following environment variables before deploying:
+
+| Variable       | Description              |
+|----------------|--------------------------|
+| `DB_HOST_PROD` | Supabase host            |
+| `DB_PORT_PROD` | Supabase port (5432)     |
+| `DB_USERNAME_PROD` | Supabase user        |
+| `DB_PASSWORD_PROD` | Supabase password    |
+| `DB_NAME_PROD` | Supabase database name   |
+| `JWT_SECRET`   | JWT signing secret       |
+
 ---
 
 ## API Documentation (Swagger)
@@ -247,8 +283,12 @@ The backend exposes an interactive Swagger UI at:
 http://localhost:4000/api-docs
 ```
 
-The raw OpenAPI spec is available at:
+Production Swagger:
+```
+https://x8ljuoyfr0.execute-api.us-east-1.amazonaws.com/api-docs
+```
 
+The raw OpenAPI spec is available at:
 ```
 http://localhost:4000/api-docs.json
 ```
