@@ -1,0 +1,63 @@
+service: fullstack-challenge-backend
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  stage: ${opt:stage, 'prod'}
+  environment:
+    NODE_ENV: production
+    PORT: 4000
+    DB_HOST: ${env:DB_HOST_PROD}
+    DB_PORT: ${env:DB_PORT_PROD, '5432'}
+    DB_USERNAME: ${env:DB_USERNAME_PROD}
+    DB_PASSWORD: ${env:DB_PASSWORD_PROD}
+    DB_NAME: ${env:DB_NAME_PROD}
+    JWT_SECRET: ${env:JWT_SECRET}
+    REQRES_BASE_URL: https://reqres.in/api
+    CORS_ORIGIN: '*'
+  httpApi:
+    cors:
+      allowedOrigins:
+        - '*'
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+
+functions:
+  api:
+    handler: dist/lambda.handler
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
+      - httpApi:
+          path: /
+          method: ANY
+    timeout: 30
+    memorySize: 512
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 4001
+
+package:
+  individually: false
+  exclude:
+    - src/**
+    - '**/*.ts'
+    - node_modules/.bin/**
+    - .env*
+    - docker-compose.yml
+    - '**/*.test.*'
