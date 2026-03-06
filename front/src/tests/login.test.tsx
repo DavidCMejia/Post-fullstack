@@ -8,7 +8,6 @@ import authReducer from '../slices/authSlice'
 import usersReducer from '../slices/usersSlice'
 import postsReducer from '../slices/postsSlice'
 
-// Mock api.ts to avoid interceptors setup crashing in jsdom
 jest.mock('../services/api', () => ({
   __esModule: true,
   default: {
